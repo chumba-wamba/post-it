@@ -10,4 +10,19 @@ class User(Document):
     user_name: str = StringField(required=True, unique=True)
     email: str = StringField(required=True, unique=True)
     password: str = StringField(required=True)
-    posts: List = ListField(ObjectIdField)
+    posts: List = ListField(ObjectIdField())
+
+
+class Post(Document):
+    title: str = StringField(required=True)
+    post: str = StringField(required=True)
+    date_defined = DateTimeField(default=datetime.now)
+    likes: int = IntField()
+    liked_by: List = ListField(ObjectIdField())
+    comments: List = ListField(ObjectIdField())
+
+
+class Comment(Document):
+    comment: str = StringField(required=True)
+    date_defined = DateTimeField(default=datetime.now)
+    likes: IntField()
