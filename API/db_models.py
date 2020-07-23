@@ -25,4 +25,5 @@ class Post(Document):
 class Comment(Document):
     comment: str = StringField(required=True)
     date_defined = DateTimeField(default=datetime.now)
-    likes: IntField()
+    likes: int = IntField()
+    likes_by: List = ListField(ObjectIdField())

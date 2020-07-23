@@ -34,3 +34,8 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
         data=dict(sub=user_name)
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.get('/protected')
+def protected_route(user=Depends(manager)):
+    return {"message": "accessing protected route"}

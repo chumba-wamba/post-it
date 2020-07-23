@@ -26,7 +26,7 @@ def UserOut(BaseModel):
                         decription="the posts written by the user")
 
 
-def PostInt(BaseModel):
+def PostIn(BaseModel):
     title: str = Field(..., title="post title",
                        description="the title of the post")
     post: str = Field(..., title="post title",
@@ -44,3 +44,13 @@ def PostOut(BaseModel):
                        description="the number of likes on the post")
     comments: List = Field(..., title="comments",
                            description="the comments on the post")
+
+
+def CommentIn(BaseModel):
+    comment: str = Field(..., title="comment", description="the comment on a post")
+
+
+def CommentOut(BaseModel):
+    comment: str = Field(..., title="comment", description="the comment on a post")
+    date_defined: str = Field(..., title="date defined", description="the date the comment was defined")
+    likes: int = Field(..., title="likes", description="the number of likes on the post")
