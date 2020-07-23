@@ -22,8 +22,6 @@ def UserOut(BaseModel):
     user_name: str = Field(..., title="user name",
                            description="the user name of the user")
     email: str = Field(..., title="email", description="the email of the user")
-    posts: List = Field(..., title="posts",
-                        decription="the posts written by the user")
 
 
 def PostIn(BaseModel):
@@ -34,23 +32,34 @@ def PostIn(BaseModel):
 
 
 def PostOut(BaseModel):
+    author: str = Field(..., title="post author",
+                        description="the user who developed the post")
     title: str = Field(..., title="post title",
                        description="the title of the post")
     body: str = Field(..., title="post body",
                       description="the content of the post")
     date_defined = Field(..., "date defined",
                          description="the date the post was defined")
-    likes: int = Field(..., "likes",
-                       description="the number of likes on the post")
-    comments: List = Field(..., title="comments",
-                           description="the comments on the post")
-
+    likes: Optional[int] = Field(None, "likes",
+                                 description="the number of likes on the post")
+    liked_by: Optional[List] = Field(None,  tite="liked by",
+                           description="a list of users who liked the post")
 
 def CommentIn(BaseModel):
-    comment: str = Field(..., title="comment", description="the comment on a post")
+    comment: str = Field(..., title="comment",
+                         description="the comment on a post")
 
 
 def CommentOut(BaseModel):
-    comment: str = Field(..., title="comment", description="the comment on a post")
-    date_defined: str = Field(..., title="date defined", description="the date the comment was defined")
-    likes: int = Field(..., title="likes", description="the number of likes on the post")
+    author: str = Field(..., title="post author",
+                        description="the user who defined the comment")
+    post: Optional = Field(None, tite="post id",
+                           description="the id of the post on which the comment was defined")
+    comment: str = Field(..., title="comment",
+                         description="the comment on a post")
+    date_defined: str = Field(..., title="date defined",
+                              description="the date the comment was defined")
+    likes: Optional[int] = Field(
+        None, title="likes", description="the number of likes on the comment")
+    liked_by: Optional[List] = Field(None,  tite="liked by",
+                           description="a list of users who liked the comment")
