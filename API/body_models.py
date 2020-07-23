@@ -25,9 +25,12 @@ def UserOut(BaseModel):
 
 
 def PostIn(BaseModel):
+    author: str = Field(..., title="post author",
+                        description="the user who developed the post")
+
     title: str = Field(..., title="post title",
                        description="the title of the post")
-    post: str = Field(..., title="post title",
+    body: str = Field(..., title="post title",
                       description="the title of the post")
 
 
@@ -43,9 +46,14 @@ def PostOut(BaseModel):
     likes: Optional[int] = Field(None, "likes",
                                  description="the number of likes on the post")
     liked_by: Optional[List] = Field(None,  tite="liked by",
-                           description="a list of users who liked the post")
+                                     description="a list of users who liked the post")
+
 
 def CommentIn(BaseModel):
+    author: str = Field(..., title="comment author",
+                        description="the user who developed the comment")
+    post = Field(..., tite="post id",
+                           description="the id of the post on which the comment was defined")
     comment: str = Field(..., title="comment",
                          description="the comment on a post")
 
@@ -53,7 +61,7 @@ def CommentIn(BaseModel):
 def CommentOut(BaseModel):
     author: str = Field(..., title="post author",
                         description="the user who defined the comment")
-    post: Optional = Field(None, tite="post id",
+    post = Field(..., tite="post id",
                            description="the id of the post on which the comment was defined")
     comment: str = Field(..., title="comment",
                          description="the comment on a post")
@@ -62,4 +70,4 @@ def CommentOut(BaseModel):
     likes: Optional[int] = Field(
         None, title="likes", description="the number of likes on the comment")
     liked_by: Optional[List] = Field(None,  tite="liked by",
-                           description="a list of users who liked the comment")
+                                     description="a list of users who liked the comment")

@@ -5,5 +5,5 @@ To do:
 - Draw sequence, architecture, and/or use-case diagrams.
 - Code the Backend to interact with the API.
 - Code the models for MongoDB in MongoEngine.
-- Code API interact with the database.
+- Code API to interact with the database.
 - Design and code the front-end.
