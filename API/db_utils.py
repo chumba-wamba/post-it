@@ -1,6 +1,6 @@
 from typing import Optional, List, Tuple, Dict
-from API.body_models import UserIn, UserOut, PostIn, PostOut, CommentIn, CommentOut
-from API.db_models import User, Post, Comment
+from body_models import UserIn, UserOut, PostIn, PostOut, CommentIn, CommentOut
+from db_models import User, Post, Comment
 
 
 def get_user(user_name: str):

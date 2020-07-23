@@ -6,8 +6,9 @@ from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
 from typing import Optional, List, Tuple, Dict
 from pydantic import BaseModel, Field
-from API.body_models import UserIn, UserOut, PostIn, PostOut, CommentIn, CommentOut
-from API.db_models import User, Post, Comment
+from body_models import UserIn, UserOut, PostIn, PostOut, CommentIn, CommentOut
+from db_models import User, Post, Comment
+from db_utils import *
 
 
 def swagger_monkey_patch(*args, **kwargs):

@@ -15,6 +15,8 @@ def UserIn(BaseModel):
 
 
 def UserOut(BaseModel):
+    _id = Field(..., title="id",
+                description="the unique id (primary key) assigned to the user")
     first_name: str = Field(..., title="first name",
                             description="the first name of the user")
     last_name: Optional[str] = Field(
@@ -35,6 +37,8 @@ def PostIn(BaseModel):
 
 
 def PostOut(BaseModel):
+    _id = Field(..., title="id",
+                description="the unique id (primary key) assigned to the post")
     author: str = Field(..., title="post author",
                         description="the user who developed the post")
     title: str = Field(..., title="post title",
@@ -59,6 +63,8 @@ def CommentIn(BaseModel):
 
 
 def CommentOut(BaseModel):
+    _id = Field(..., title="id",
+                description="the unique id (primary key) assigned to the comment")
     author: str = Field(..., title="post author",
                         description="the user who defined the comment")
     post = Field(..., tite="post id",
