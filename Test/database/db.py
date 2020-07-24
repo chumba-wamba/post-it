@@ -39,6 +39,7 @@ class UserIn(BaseModel):
 
 
 class UserOut(BaseModel):
+    pk: str = Field(..., title="id")
     first_name: str = Field(..., title="first name")
     last_name: Optional[str] = Field(None, title="last name")
     user_name: str = Field(..., title="user name")
@@ -54,9 +55,10 @@ async def post_user(user_in: UserIn) -> Dict[str, str]:
     )
     user.save()
     user_out = UserOut(
-        first_name=user_in.first_name,
-        last_name=user_in.last_name,
-        user_name=user_in.user_name
+        pk=str(user.id),
+        first_name=user.first_name,
+        last_name=user.last_name,
+        user_name=user.user_name
     )
     return user_out
 
@@ -67,6 +69,7 @@ async def get_all_users() -> List[UserOut]:
     user_list = []
     for user in users:
         user_out = UserOut(
+            pk=str(user.id),
             first_name=user.first_name,
             last_name=user.last_name,
             user_name=user.user_name
@@ -78,8 +81,10 @@ async def get_all_users() -> List[UserOut]:
 @app.get("/user/{user_name}", response_model=UserOut)
 async def get_user(user_name: str) -> UserOut:
     user = User.objects(user_name=user_name).first()
+    print(user.pk)
     if user:
         return UserOut(
+            pk=str(user.pk),
             first_name=user.first_name,
             last_name=user.last_name,
             user_name=user.user_name
