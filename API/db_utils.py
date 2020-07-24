@@ -19,13 +19,12 @@ def get_users():
 
 
 def create_user(user_in: UserIn):
-    hashed_password = user_in.password
     user = User(
         first_name=user_in.first_name,
         last_name=user_in.last_name,
         user_name=user_in.user_name,
         email=user_in.email,
-        password=user_in.hashed_password
+        password=user_in.password
     )
     user.save()
     return user
