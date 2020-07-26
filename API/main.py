@@ -6,8 +6,8 @@ from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
 from mongoengine import connect
 import bcrypt
-from typing import Optional, List, Tuple, Dict
-from pydantic import BaseModel, Field
+from typing import Optional, List, Tuple, Dict, Any
+from pydantic import BaseModel, Field, EmailStr
 from body_models import UserIn, UserOut, PostIn, PostOut, CommentIn, CommentOut
 from db_models import User, Post, Comment
 import db_utils
@@ -16,7 +16,7 @@ import db_utils
 def swagger_monkey_patch(*args, **kwargs):
     """
     Wrap the function which is generating the HTML for the /docs endpoint and
-    overwrite the default values for the swagger js and css.
+    overwrite the async default values for the swagger js and css.
     """
     return get_swagger_ui_html(
         *args, **kwargs,
@@ -40,7 +40,7 @@ def load_user(user_name: str):
 
 
 @app.get("/")
-def root() -> Dict[str, str]:
+async def root() -> Dict[str, str]:
     return {
         "success": True,
         "message": "hello, world",
@@ -49,7 +49,7 @@ def root() -> Dict[str, str]:
 
 
 @app.post("/auth/token")
-def login(data: OAuth2PasswordRequestForm = Depends()):
+async def login(data: OAuth2PasswordRequestForm = Depends()) -> Dict[str, Any]:
     user_name = data.username
     password = data.password
 
@@ -65,22 +65,31 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.post("/users", response_model=UserOut)
-def create_user(user_in: UserIn) -> UserOut:
+@app.post("/users")
+async def create_user(user_in: UserIn) -> Dict[str, Any]:
     user_in.password = bcrypt.hashpw(
         user_in.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     user_out = db_utils.create_user(user_in=user_in)
-    return UserOut(
-        pk=str(user_out.id),
-        first_name=user_out.first_name,
-        last_name=user_out.last_name,
-        user_name=user_out.user_name,
-        email=user_out.email
-    )
+    if user_out:
+        return {
+            "success": True,
+            "message": "user created successfully",
+            "data":  UserOut(
+                pk=str(user_out.id),
+                first_name=user_out.first_name,
+                last_name=user_out.last_name,
+                user_name=user_out.user_name,
+                email=user_out.email
+            )}
+    return {
+        "success": False,
+        "message": "could not create user",
+        "data": {}
+    }
 
 
 @app.get("/users/all")
-async def get_all_users() -> List[UserOut]:
+async def get_all_users() -> Dict[str, Any]:
     users = db_utils.get_users()
     user_list = []
     for user in users:
@@ -99,8 +108,8 @@ async def get_all_users() -> List[UserOut]:
     }
 
 
-@app.get("/users/{user_name}")
-async def get_user(user_name: str) -> UserOut:
+@app.get("/users/user_name/{user_name}")
+async def get_user(user_name: str) -> Dict[str, Any]:
     user = db_utils.get_user(user_name=user_name)
     if user:
         return {
@@ -121,13 +130,35 @@ async def get_user(user_name: str) -> UserOut:
     }
 
 
+@app.get("/users/email/{email}")
+async def get_user_by_email(email: EmailStr) -> Dict[str, Any]:
+    user = db_utils.get_user_by_email(email=email)
+    if user:
+        return {
+            "success": True,
+            "message": "user found",
+            "data": UserOut(
+                pk=str(user.id),
+                first_name=user.first_name,
+                last_name=user.last_name,
+                user_name=user.user_name,
+                email=user.email
+            )
+        }
+    return {
+        "success": False,
+        "message": "user does not exist",
+        "data": {}
+    }
+
+
 @app.get("/users/delete/{user_name}")
-def delete_user(user_name: str):
+async def delete_user(user_name: str) -> Dict[str, Any]:
     deleted = db_utils.delete_user(user_name)
     if deleted:
         return {
             "success": True,
-            "message": "user successfully delete",
+            "message": "user successfully deleted",
             "data": {}
         }
     return {
@@ -138,30 +169,94 @@ def delete_user(user_name: str):
 
 
 @app.post("/users/update/{user_name}")
-def update_user():
+async def update_user():
     pass
 
 
 @app.post("/posts")
-def create_post():
-    pass
+async def create_post(post_in: PostIn) -> Dict[str, Any]:
+    post = db_utils.create_post(post_in=post_in)
+    return {
+        "success": True,
+        "message": "post created successfully",
+        "data":  PostOut(
+            pk=str(post.pk),
+            author=post.author,
+            title=post.title,
+            body=post.body,
+            date_defined=post.date_defined,
+            likes=post.likes,
+            liked_by=post.liked_by
+        )}
 
 
-@app.get("/posts/all/{post_id}")
-def get_all_posts():
-    pass
+@app.get("/posts/all/{author}")
+async def get_posts_by_author(author: str):
+    posts = db_utils.get_posts_by_author(author=author)
+    if not posts:
+        return {
+            "success": False,
+            "message": "author does not exist",
+            "data": {}
+        }
+    post_list = []
+    for post in posts:
+        post_out = PostOut(
+            pk=str(post.pk),
+            author=post.author,
+            title=post.title,
+            body=post.body,
+            date_defined=post.date_defined,
+            likes=post.likes,
+            liked_by=post.liked_by
+        )
+        post_list.append(post_out)
+    return {
+        "success": True,
+        "message": "posts found",
+        "data": post_list
+    }
 
 
-@app.get("posts/{post_id}")
-def get_post():
-    pass
+@app.get("/posts/{post_id}")
+async def get_post(post_id):
+    post = db_utils.get_post(post_id)
+    if post:
+        return {
+            "success": True,
+            "message": "post found",
+            "data": PostOut(
+                pk=str(post.pk),
+                author=post.author,
+                title=post.title,
+                body=post.body,
+                date_defined=post.date_defined,
+                likes=post.likes,
+                liked_by=post.liked_by
+            )}
+    return {
+        "success": False,
+        "message": "post does not exist",
+        "data": {}
+    }
 
 
-@app.get("posts/delete/{post_id}")
-def delete_post():
-    pass
+@app.get("/posts/delete/{post_id}")
+async def delete_post(post_id):
+    deleted = db_utils.delete_post(post_id)
+    if deleted:
+        return {
+            "success": True,
+            "message": "post successfully deleted",
+            "data": {}
+        }
+    return {
+        "success": False,
+        "message": "post does not exist",
+        "data": {}
+    }
 
 
 @app.post("/posts/update/{post_id}")
-def update_post():
+async def update_post():
     pass

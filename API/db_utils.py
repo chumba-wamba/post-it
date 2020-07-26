@@ -1,24 +1,11 @@
 from typing import Optional, List, Tuple, Dict
+from pydantic import EmailStr
 from body_models import UserIn, UserOut, PostIn, PostOut, CommentIn, CommentOut
 from db_models import User, Post, Comment
 
 
-def get_user(user_name: str):
-    user = User.objects(user_name=user_name).first()
-    return user
-
-
-def get_user_by_email(email: str) -> User:
-    user = User.objects(email=email).first()
-    return user
-
-
-def get_users() -> List[User]:
-    users = User.objects()
-    return users
-
-
 def create_user(user_in: UserIn) -> User:
+
     user = User(
         first_name=user_in.first_name,
         last_name=user_in.last_name,
@@ -26,7 +13,25 @@ def create_user(user_in: UserIn) -> User:
         email=user_in.email,
         password=user_in.password
     )
-    user.save()
+    try:
+        user.save()
+        return user
+    except:
+        return None
+
+
+def get_users() -> List[User]:
+    users = User.objects()
+    return users
+
+
+def get_user(user_name: str):
+    user = User.objects(user_name=user_name).first()
+    return user
+
+
+def get_user_by_email(email: EmailStr) -> User:
+    user = User.objects(email=email).first()
     return user
 
 
@@ -38,21 +43,7 @@ def delete_user(user_name: str) -> bool:
     return False
 
 
-def get_post(id):
-    post = Post.objects(id=id)
-
-
-def get_posts_by_user(user_name: str):
-    posts = Post.objects(user_name=user_name)
-    return posts
-
-
-def get_posts():
-    posts = Post.objects()
-    return posts
-
-
-def create_post(post_in: PostIn):
+def create_post(post_in: PostIn) -> Post:
     post = Post(
         author=post_in.author,
         title=post_in.title,
@@ -62,12 +53,32 @@ def create_post(post_in: PostIn):
     return post
 
 
-def get_comment(id):
-    comment = Comment.objects(id=id)
+def get_posts_by_author(author: str):
+    if User.objects(user_name=author).first():
+        posts = Post.objects(author=author)
+        return posts
+    return False
 
 
-def get_comments_by_user(user_name: str):
-    comments = Comment.objects(author=user_name)
+def get_post(post_id):
+    post = Post.objects(pk=post_id).first()
+    return post
+
+
+def delete_post(post_id: str) -> bool:
+    post = Post.objects(pk=post_id).first()
+    if post:
+        post.delete()
+        return True
+    return False
+
+
+def get_comment(comment_id):
+    comment = Comment.objects(pk=comment_id)
+
+
+def get_comments_by_author(author: str):
+    comments = Comment.objects(author=author)
     return comments
 
 

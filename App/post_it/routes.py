@@ -30,3 +30,5 @@ def login():
 
 
 @app.route("/home")
+def home():
+    pass
