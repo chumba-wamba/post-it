@@ -8,17 +8,17 @@ def get_user(user_name: str):
     return user
 
 
-def get_user_by_email(email: str):
+def get_user_by_email(email: str) -> User:
     user = User.objects(email=email).first()
     return user
 
 
-def get_users():
+def get_users() -> List[User]:
     users = User.objects()
     return users
 
 
-def create_user(user_in: UserIn):
+def create_user(user_in: UserIn) -> User:
     user = User(
         first_name=user_in.first_name,
         last_name=user_in.last_name,
@@ -28,6 +28,14 @@ def create_user(user_in: UserIn):
     )
     user.save()
     return user
+
+
+def delete_user(user_name: str) -> bool:
+    user = User.objects(user_name=user_name).first()
+    if user:
+        user.delete()
+        return True
+    return False
 
 
 def get_post(id):

@@ -56,7 +56,7 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     user = load_user(user_name)
     if not user:
         raise InvalidCredentialsException
-    elif password != user["password"]:
+    elif bcrypt.checkpw(password.encode("utf-8"), user["password"].encode("utf-8")):
         raise InvalidCredentialsException
 
     access_token = manager.create_access_token(
@@ -66,7 +66,7 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
 
 
 @app.post("/users", response_model=UserOut)
-def create_user(user_in: UserIn):
+def create_user(user_in: UserIn) -> UserOut:
     user_in.password = bcrypt.hashpw(
         user_in.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     user_out = db_utils.create_user(user_in=user_in)
@@ -119,3 +119,49 @@ async def get_user(user_name: str) -> UserOut:
         "message": "user does not exist",
         "data": {}
     }
+
+
+@app.get("/users/delete/{user_name}")
+def delete_user(user_name: str):
+    deleted = db_utils.delete_user(user_name)
+    if deleted:
+        return {
+            "success": True,
+            "message": "user successfully delete",
+            "data": {}
+        }
+    return {
+        "success": False,
+        "message": "user does not exist",
+        "data": {}
+    }
+
+
+@app.post("/users/update/{user_name}")
+def update_user():
+    pass
+
+
+@app.post("/posts")
+def create_post():
+    pass
+
+
+@app.get("/posts/all/{post_id}")
+def get_all_posts():
+    pass
+
+
+@app.get("posts/{post_id}")
+def get_post():
+    pass
+
+
+@app.get("posts/delete/{post_id}")
+def delete_post():
+    pass
+
+
+@app.post("/posts/update/{post_id}")
+def update_post():
+    pass

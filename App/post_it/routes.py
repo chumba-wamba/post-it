@@ -1,7 +1,8 @@
-from flask import render_template, url_for, jsonify, session
+from flask import render_template, url_for, jsonify, request
 from requests import get, post
 from functools import wraps
-from post_it import app, session
+from post_it import app, redis_db, api_url
+from post_it.forms import *
 
 
 def login_required(f):
@@ -15,4 +16,17 @@ def login_required(f):
 
 @app.route("/")
 def root():
-    return {"message": "hello, world"}
+    return {"message": "welcome to the post-it client"}
+
+
+@app.route("/register")
+def register():
+    pass
+
+
+@app.route("/login")
+def login():
+    pass
+
+
+@app.route("/home")
