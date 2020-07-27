@@ -176,18 +176,24 @@ async def update_user():
 @app.post("/posts")
 async def create_post(post_in: PostIn) -> Dict[str, Any]:
     post = db_utils.create_post(post_in=post_in)
+    if post:
+        return {
+            "success": True,
+            "message": "post created successfully",
+            "data":  PostOut(
+                pk=str(post.pk),
+                author=post.author,
+                title=post.title,
+                body=post.body,
+                date_defined=post.date_defined,
+                likes=post.likes,
+                liked_by=post.liked_by
+            )}
     return {
-        "success": True,
-        "message": "post created successfully",
-        "data":  PostOut(
-            pk=str(post.pk),
-            author=post.author,
-            title=post.title,
-            body=post.body,
-            date_defined=post.date_defined,
-            likes=post.likes,
-            liked_by=post.liked_by
-        )}
+        "success": False,
+        "message": "could not create user",
+        "data": {}
+    }
 
 
 @app.get("/posts/all/{author}")
@@ -265,18 +271,24 @@ async def update_post():
 @app.post("/comments")
 async def create_comment(comment_in: CommentIn) -> Dict[str, Any]:
     comment = db_utils.create_comment(comment_in=comment_in)
+    if comment:
+        return {
+            "success": True,
+            "message": "comment created successfully",
+            "data":  CommentOut(
+                pk=str(comment.pk),
+                author=comment.author,
+                post=str(comment.post),
+                comment=comment.comment,
+                date_defined=comment.date_defined,
+                likes=comment.likes,
+                liked_by=comment.liked_by
+            )}
     return {
-        "success": True,
-        "message": "comment created successfully",
-        "data":  CommentOut(
-            pk=str(comment.pk),
-            author=comment.author,
-            post=str(comment.post),
-            comment=comment.comment,
-            date_defined=comment.date_defined,
-            likes=comment.likes,
-            liked_by=comment.liked_by
-        )}
+        "success": False,
+        "message": "could not create comment",
+        "data": {}
+    }
 
 
 @app.get("/comments/all/{post_id}")

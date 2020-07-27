@@ -5,7 +5,6 @@ from db_models import User, Post, Comment
 
 
 def create_user(user_in: UserIn) -> User:
-
     user = User(
         first_name=user_in.first_name,
         last_name=user_in.last_name,
@@ -44,14 +43,18 @@ def delete_user(user_name: str) -> bool:
 
 
 def create_post(post_in: PostIn) -> Post:
-
-    post = Post(
-        author=post_in.author,
-        title=post_in.title,
-        body=post_in.body
-    )
-    post.save()
-    return post
+    author = get_user(user_name=post_in.author)
+    if author:
+        post = Post(
+            author=post_in.author,
+            title=post_in.title,
+            body=post_in.body
+        )
+        try:
+            post.save()
+            return post
+        except:
+            return None
 
 
 def get_posts_by_author(author: str):
@@ -62,8 +65,11 @@ def get_posts_by_author(author: str):
 
 
 def get_post(post_id):
-    post = Post.objects(pk=post_id).first()
-    return post
+    try:
+        post = Post.objects(pk=post_id).first()
+        return post
+    except:
+        return None
 
 
 def delete_post(post_id: str) -> bool:
@@ -75,18 +81,27 @@ def delete_post(post_id: str) -> bool:
 
 
 def create_comment(comment_in: CommentIn):
-    comment = Comment(
-        author=comment_in.author,
-        post=comment_in.post,
-        comment=comment_in.comment
-    )
-    comment.save()
-    return comment
+    author, post = get_user(user_name=comment_in.author), get_post(
+        post_id=comment_in.post)
+    if author and post:
+        comment = Comment(
+            author=comment_in.author,
+            post=comment_in.post,
+            comment=comment_in.comment
+        )
+        try:
+            comment.save()
+            return comment
+        except:
+            return None
 
 
 def get_comments_by_post(post_id: str):
-    comments = Comment.objects(post=post_id)
-    return comments
+    try:
+        comments = Comment.objects(post=post_id)
+        return comments
+    except:
+        return None
 
 
 def get_comments_by_author(author: str):
@@ -95,4 +110,8 @@ def get_comments_by_author(author: str):
 
 
 def get_comment(comment_id):
-    comment = Comment.objects(pk=comment_id)
+    try:
+        comment = Comment.objects(pk=comment_id)
+        return comment
+    except:
+        return None
