@@ -168,7 +168,7 @@ async def delete_user(user_name: str) -> Dict[str, Any]:
     }
 
 
-@app.post("/users/update/{user_name}")
+@app.put("/users/update/{user_name}")
 async def update_user():
     pass
 
@@ -257,6 +257,51 @@ async def delete_post(post_id):
     }
 
 
-@app.post("/posts/update/{post_id}")
+@app.put("/posts/update/{post_id}")
 async def update_post():
     pass
+
+
+@app.post("/comments")
+async def create_comment(comment_in: CommentIn) -> Dict[str, Any]:
+    comment = db_utils.create_comment(comment_in=comment_in)
+    return {
+        "success": True,
+        "message": "comment created successfully",
+        "data":  CommentOut(
+            pk=str(comment.pk),
+            author=comment.author,
+            post=str(comment.post),
+            comment=comment.comment,
+            date_defined=comment.date_defined,
+            likes=comment.likes,
+            liked_by=comment.liked_by
+        )}
+
+
+@app.get("/comments/all/{post_id}")
+async def get_comments_by_post(post_id: str):
+    comments = db_utils.get_comments_by_post(post_id=post_id)
+    if not comments:
+        return {
+            "success": False,
+            "message": "post does not exist",
+            "data": {}
+        }
+    comment_list = []
+    for comment in comments:
+        post_out = CommentOut(
+            pk=str(comment.pk),
+            author=comment.author,
+            post=str(comment.post),
+            comment=comment.comment,
+            date_defined=comment.date_defined,
+            likes=comment.likes,
+            liked_by=comment.liked_by
+        )
+        comment_list.append(post_out)
+    return {
+        "success": True,
+        "message": "posts found",
+        "data": comment_list
+    }

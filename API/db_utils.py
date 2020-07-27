@@ -44,6 +44,7 @@ def delete_user(user_name: str) -> bool:
 
 
 def create_post(post_in: PostIn) -> Post:
+
     post = Post(
         author=post_in.author,
         title=post_in.title,
@@ -73,25 +74,6 @@ def delete_post(post_id: str) -> bool:
     return False
 
 
-def get_comment(comment_id):
-    comment = Comment.objects(pk=comment_id)
-
-
-def get_comments_by_author(author: str):
-    comments = Comment.objects(author=author)
-    return comments
-
-
-def get_comment_by_post(post):
-    comments = Comment.objects(post=post)
-    return comments
-
-
-def get_comments():
-    comments = Comment.objects()
-    return comments
-
-
 def create_comment(comment_in: CommentIn):
     comment = Comment(
         author=comment_in.author,
@@ -100,3 +82,17 @@ def create_comment(comment_in: CommentIn):
     )
     comment.save()
     return comment
+
+
+def get_comments_by_post(post_id: str):
+    comments = Comment.objects(post=post_id)
+    return comments
+
+
+def get_comments_by_author(author: str):
+    comments = Comment.objects(author=author)
+    return comments
+
+
+def get_comment(comment_id):
+    comment = Comment.objects(pk=comment_id)

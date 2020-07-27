@@ -23,8 +23,8 @@ class Post(Document):
 
 class Comment(Document):
     author: str = StringField()
-    post: ObjectIdField()
+    post = ObjectIdField()
     comment: str = StringField(required=True)
     date_defined = DateTimeField(default=datetime.now)
     likes: int = IntField()
-    likes_by: List = ListField(ObjectIdField())
+    liked_by: List = ListField(ObjectIdField())
