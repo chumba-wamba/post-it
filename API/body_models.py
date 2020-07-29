@@ -58,7 +58,7 @@ class PostOut(BaseModel):
 class CommentIn(BaseModel):
     author: str = Field(..., title="comment author",
                         description="the user who developed the comment")
-    post: str = Field(..., tite="post id",
+    post_id: str = Field(..., tite="post id",
                       description="the id of the post on which the comment was classined")
     comment: str = Field(..., title="comment",
                          description="the comment on a post")
@@ -69,7 +69,7 @@ class CommentOut(BaseModel):
                     description="the unique id (primary key) assigned to the comment")
     author: str = Field(..., title="post author",
                         description="the user who classined the comment")
-    post: str = Field(..., tite="post id",
+    post_id: str = Field(..., tite="post id",
                       description="the id of the post on which the comment was classined")
     comment: str = Field(..., title="comment",
                          description="the comment on a post")

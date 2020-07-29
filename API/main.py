@@ -158,7 +158,7 @@ async def delete_user(user_name: str) -> Dict[str, Any]:
     if deleted:
         return {
             "success": True,
-            "message": "user successfully deleted",
+            "message": "user deleted successfully",
             "data": {}
         }
     return {
@@ -179,7 +179,7 @@ async def create_post(post_in: PostIn) -> Dict[str, Any]:
     if post:
         return {
             "success": True,
-            "message": "post created successfully",
+            "message": "post successfully created",
             "data":  PostOut(
                 pk=str(post.pk),
                 author=post.author,
@@ -274,11 +274,11 @@ async def create_comment(comment_in: CommentIn) -> Dict[str, Any]:
     if comment:
         return {
             "success": True,
-            "message": "comment created successfully",
+            "message": "comment successfully created",
             "data":  CommentOut(
                 pk=str(comment.pk),
                 author=comment.author,
-                post=str(comment.post),
+                post_id=str(comment.post_id),
                 comment=comment.comment,
                 date_defined=comment.date_defined,
                 likes=comment.likes,
@@ -297,7 +297,7 @@ async def get_comments_by_post(post_id: str):
     if not comments:
         return {
             "success": False,
-            "message": "post does not exist",
+            "message": "could not find comments",
             "data": {}
         }
     comment_list = []
@@ -305,7 +305,7 @@ async def get_comments_by_post(post_id: str):
         post_out = CommentOut(
             pk=str(comment.pk),
             author=comment.author,
-            post=str(comment.post),
+            post_id=str(comment.post_id),
             comment=comment.comment,
             date_defined=comment.date_defined,
             likes=comment.likes,
@@ -314,6 +314,54 @@ async def get_comments_by_post(post_id: str):
         comment_list.append(post_out)
     return {
         "success": True,
-        "message": "posts found",
+        "message": "comments found",
         "data": comment_list
+    }
+
+
+@app.get("/comments/delete/{comment_id}")
+async def delete_comment(comment_id: str):
+    deleted = db_utils.delete_comment(comment_id=comment_id)
+    if deleted:
+        return {
+            "success": True,
+            "message": "comment successfully deleted",
+            "data": {}
+        }
+    return {
+        "success": False,
+        "message": "could not delete comment",
+        "data": {}
+    }
+
+
+@app.get("/comments/delete/all/{post_id}")
+async def delete_comments_by_post(post_id: str):
+    deleted = db_utils.delete_comments_by_post(post_id=post_id)
+    if deleted:
+        return {
+            "success": True,
+            "message": "comments successfully deleted",
+            "data": {}
+        }
+    return {
+        "success": False,
+        "message": "could not delete comments",
+        "data": {}
+    }
+
+
+@app.get("/comments/delete/all/{author}")
+async def delete_comments_by_author(author: str):
+    deleted = db_utils.delete_comments_by_author(author)
+    if deleted:
+        return {
+            "success": True,
+            "message": "comments successfully deleted",
+            "data": {}
+        }
+    return {
+        "success": False,
+        "message": "could not delete comments",
+        "data": {}
     }
