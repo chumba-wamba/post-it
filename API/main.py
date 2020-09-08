@@ -40,7 +40,7 @@ def load_user(user_name: str):
 
 
 @app.get("/")
-async def root() -> Dict[str, str]:
+async def root(user=Depends(manager)) -> Dict[str, str]:
     return {
         "success": True,
         "message": "hello, world",
@@ -56,7 +56,7 @@ async def login(data: OAuth2PasswordRequestForm = Depends()) -> Dict[str, Any]:
     user = load_user(user_name)
     if not user:
         raise InvalidCredentialsException
-    elif bcrypt.checkpw(password.encode("utf-8"), user["password"].encode("utf-8")):
+    elif not bcrypt.checkpw(password.encode("utf-8"), user["password"].encode("utf-8")):
         raise InvalidCredentialsException
 
     access_token = manager.create_access_token(
